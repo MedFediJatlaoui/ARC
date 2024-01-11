@@ -1,0 +1,14 @@
+
+.mat-select {
+    padding: 0px 17px;
+    font-size: 16px;
+    border-right: 1px solid #CFCFCF;
+    z-index: 99;
+    }
+    .mat-option:hover:not(.mat-option-disabled), .mat-option:focus:not(.mat-option-disabled) {
+    background: #161c2d;
+    color: #fff;
+    }
+    .mat-select-panel .mat-option.mat-selected:hover:not(.mat-option-multiple){
+    background: #161c2d;
+    }
