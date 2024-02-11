@@ -1,5 +1,6 @@
 package com.back.arc.config;
 
+import com.back.arc.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,16 +36,25 @@ public class JwtService {
   }
 
   public String generateToken(UserDetails userDetails) {
-    return generateToken(new HashMap<>(), userDetails);
-  }
-
-  public String generateToken(
-      Map<String, Object> extraClaims,
-      UserDetails userDetails
-  ) {
+    Map<String, Object> extraClaims = extractExtraClaims(userDetails);
     return buildToken(extraClaims, userDetails, jwtExpiration);
   }
+  private Map<String, Object> extractExtraClaims(UserDetails userDetails) {
+    Map<String, Object> extraClaims = new HashMap<>();
 
+    // Add extra claims based on user details attributes
+    if (userDetails instanceof User) {
+      User customUserDetails = (User) userDetails;
+
+
+      extraClaims.put("role", customUserDetails.getRole());
+      extraClaims.put("email", customUserDetails.getEmail());
+      extraClaims.put("phone", customUserDetails.getPhone());
+
+    }
+
+    return extraClaims;
+  }
   public String generateRefreshToken(
       UserDetails userDetails
   ) {
@@ -62,7 +72,7 @@ public class JwtService {
             .setSubject(userDetails.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+           .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
   }
 

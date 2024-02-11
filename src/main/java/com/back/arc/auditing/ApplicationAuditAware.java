@@ -1,6 +1,6 @@
 package com.back.arc.auditing;
 
-import com.back.arc.user.User;
+import com.back.arc.entities.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

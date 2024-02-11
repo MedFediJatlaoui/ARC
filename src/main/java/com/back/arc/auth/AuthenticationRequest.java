@@ -1,9 +1,6 @@
 package com.back.arc.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -13,4 +10,14 @@ public class AuthenticationRequest {
 
   private String email;
   String password;
+
+    @Getter
+    @Setter
+    @Builder
+    public static class ChangePasswordRequest {
+
+        private String currentPassword;
+        private String newPassword;
+        private String confirmationPassword;
+    }
 }

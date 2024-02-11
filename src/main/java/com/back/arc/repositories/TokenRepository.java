@@ -1,7 +1,9 @@
-package com.back.arc.token;
+package com.back.arc.repositories;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.back.arc.entities.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

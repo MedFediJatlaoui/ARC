@@ -1,6 +1,5 @@
-package com.back.arc.token;
+package com.back.arc.entities;
 
-import com.back.arc.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

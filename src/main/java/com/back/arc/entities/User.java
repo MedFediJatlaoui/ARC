@@ -1,6 +1,6 @@
-package com.back.arc.user;
+package com.back.arc.entities;
 
-import com.back.arc.token.Token;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Collection;
@@ -23,15 +23,20 @@ public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-  private String username;
+
+@Column(unique=true)
+  private String usernamee;
   private String phone;
+  @Column(unique=true)
   private String email;
   private String password;
+  private String profileImagePath;
 
   @Enumerated(EnumType.STRING)
   private Role role;
 
   @OneToMany(mappedBy = "user")
+  @JsonIgnore
   private List<Token> tokens;
 
   @Override
@@ -46,7 +51,7 @@ public class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return username;
+    return email;
   }
 
   @Override

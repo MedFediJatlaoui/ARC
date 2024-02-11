@@ -2,8 +2,7 @@ package com.back.arc.config;
 
 
 import com.back.arc.auditing.ApplicationAuditAware;
-import com.back.arc.user.UserRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.back.arc.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

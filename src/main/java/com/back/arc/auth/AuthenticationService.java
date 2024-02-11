@@ -1,22 +1,28 @@
 package com.back.arc.auth;
 
 import com.back.arc.config.JwtService;
-import com.back.arc.token.Token;
-import com.back.arc.token.TokenRepository;
-import com.back.arc.token.TokenType;
-import com.back.arc.user.User;
-import com.back.arc.user.UserRepository;
+import com.back.arc.entities.Role;
+import com.back.arc.entities.Token;
+import com.back.arc.repositories.TokenRepository;
+import com.back.arc.entities.TokenType;
+import com.back.arc.entities.User;
+import com.back.arc.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+
+import static org.hibernate.bytecode.enhance.spi.interceptor.BytecodeInterceptorLogging.LOGGER;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +32,15 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = User.builder()
-        .username(request.getUsername())
+        .usernamee(request.getUsername())
         .phone(request.getPhone())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
+        .role(Role.USER)
         .build();
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);
@@ -46,23 +53,35 @@ public class AuthenticationService {
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getEmail(),
-            request.getPassword()
-        )
-    );
-    var user = repository.findByEmail(request.getEmail())
-        .orElseThrow();
-    var jwtToken = jwtService.generateToken(user);
-    var refreshToken = jwtService.generateRefreshToken(user);
-    revokeAllUserTokens(user);
-    saveUserToken(user, jwtToken);
-    return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-            .refreshToken(refreshToken)
-        .build();
+    try {
+      authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(
+                      request.getEmail(),
+                      request.getPassword()
+              )
+      );
+      logger.info("auth de "+request.getEmail());
+      var user = repository.findByEmail(request.getEmail())
+              .orElseThrow();
+      logger.info("user found");
+      var jwtToken = jwtService.generateToken(user);
+      logger.info("Token"+jwtToken);
+      var refreshToken = jwtService.generateRefreshToken(user);
+
+      revokeAllUserTokens(user);
+      saveUserToken(user, jwtToken);
+
+      return AuthenticationResponse.builder()
+              .accessToken(jwtToken)
+              .refreshToken(refreshToken)
+              .build();
+    } catch (AuthenticationException e) {
+      // Log details of the authentication failure
+      LOGGER.error("Authentication failed for email: {}", request.getEmail(), e);
+      throw e; // Re-throw the exception to propagate the 403 status
+    }
   }
+
 
   private void saveUserToken(User user, String jwtToken) {
     var token = Token.builder()

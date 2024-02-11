@@ -1,6 +1,6 @@
 package com.back.arc.config;
 
-import com.back.arc.token.TokenRepository;
+import com.back.arc.repositories.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

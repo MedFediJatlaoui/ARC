@@ -14,8 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 
-import static com.back.arc.user.Role.ADMIN;
-import static com.back.arc.user.Role.MANAGER;
+import static com.back.arc.entities.Role.ADMIN;
+import static com.back.arc.entities.Role.MANAGER;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -44,12 +44,16 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                                .anyRequest()
-                                .authenticated()
+                                req.anyRequest()
+                                    .permitAll()
+                       // req.requestMatchers(WHITE_LIST_URL)
+                         //       .permitAll()
+                           //     .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+                             //   .anyRequest()
+
+                              //.authenticated()
                 )
+
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -58,6 +62,8 @@ public class SecurityConfiguration {
                                 .addLogoutHandler(logoutHandler)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 )
+
+
         ;
 
         return http.build();

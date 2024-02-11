@@ -1,4 +1,4 @@
-package com.back.arc.user;
+package com.back.arc.entities;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
